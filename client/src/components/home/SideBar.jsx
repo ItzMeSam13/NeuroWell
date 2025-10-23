@@ -2,15 +2,16 @@
 
 import { usePathname, useRouter } from "next/navigation";
 import { signout } from "@/app/lib/auth";
+import { Home, User, LogOut } from "lucide-react";
 
 export default function SideBar() {
 	const router = useRouter();
 	const pathname = usePathname();
 
-	const topItem = { name: "Home", path: "/home" };
+	const topItem = { name: "Dashboard", path: "/home", icon: Home };
 	const bottomItems = [
-		{ name: "Edit Profile", path: "/home/profile" },
-		{ name: "Logout", action: "logout" },
+		{ name: "Profile", path: "/home/profile", icon: User },
+		{ name: "Logout", action: "logout", icon: LogOut },
 	];
 
 	const handleClick = async (item) => {
@@ -25,36 +26,43 @@ export default function SideBar() {
 	const isActive = pathname === topItem.path;
 
 	return (
-		<div className='h-full flex flex-col justify-between p-5'>
-			{/* App name */}
+		<div className='h-full flex flex-col justify-between p-6'>
+			{/* App branding */}
 			<div>
-				<h2 className='text-2xl font-bold mb-8 text-black tracking-tight'>
-					MyApp
-				</h2>
-
-				{/* Home */}
-				<div
-					onClick={() => handleClick(topItem)}
-					className={`cursor-pointer px-4 py-2.5 mb-2 rounded-xl text-[15px] font-medium transition-all ${
-						isActive
-							? "bg-[#1de9b6]/90 text-white shadow-sm"
-							: "text-gray-700 hover:bg-gray-100"
-					}`}>
-					{topItem.name}
+				<div className='mb-8'>
+					<h2 className='text-xl font-bold text-gray-900 tracking-tight'>
+						NeuroWell
+					</h2>
+					<p className='text-xs text-gray-500 mt-1'>Wellness Tracker</p>
 				</div>
+
+				{/* Navigation items */}
+				<nav className='space-y-1'>
+					<div
+						onClick={() => handleClick(topItem)}
+						className={`cursor-pointer flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all ${
+							isActive
+								? "bg-blue-50 text-blue-700 border border-blue-200"
+								: "text-gray-700 hover:bg-gray-50 hover:text-gray-900"
+						}`}>
+						<topItem.icon className='w-4 h-4' />
+						{topItem.name}
+					</div>
+				</nav>
 			</div>
 
 			{/* Bottom actions */}
-			<div className='space-y-2'>
+			<div className='space-y-1'>
 				{bottomItems.map((item) => (
 					<div
 						key={item.name}
 						onClick={() => handleClick(item)}
-						className={`cursor-pointer px-4 py-2.5 rounded-xl text-[15px] font-medium transition-all ${
+						className={`cursor-pointer flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all ${
 							item.action === "logout"
-								? "text-red-500 hover:bg-red-50"
-								: "text-gray-700 hover:bg-gray-100"
+								? "text-red-600 hover:bg-red-50 hover:text-red-700"
+								: "text-gray-700 hover:bg-gray-50 hover:text-gray-900"
 						}`}>
+						<item.icon className='w-4 h-4' />
 						{item.name}
 					</div>
 				))}

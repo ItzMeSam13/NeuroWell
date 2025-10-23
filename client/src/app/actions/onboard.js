@@ -27,6 +27,7 @@ export async function onboardUser(formData) {
 			screenTime: formData.screenTime || null,
 			hasMentalIssue: formData.hasMentalIssue || null,
 			mentalIssueDetails: formData.mentalIssueDetails || null,
+			streaks: 0,
 			onboardingCompleted: true,
 			createdAt: serverTimestamp(),
 			updatedAt: serverTimestamp(),
