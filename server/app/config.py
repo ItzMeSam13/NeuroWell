@@ -1,6 +1,9 @@
+import os
 import google.generativeai as genai
 
-genai.configure(api_key="AIzaSyAJFnkMklqqLygOguR0RZYstW3TSPQpa1w")
+class Config:
+    # It's better to load the API key from environment variables
+    GEMINI_API_KEY = os.getenv("GEMINI_API_KEY") or "AIzaSyAJFnkMklqqLygOguR0RZYstW3TSPQpa1w"
 
-for m in genai.list_models():
-    print(m.name)
+# Configure Gemini
+genai.configure(api_key=Config.GEMINI_API_KEY)

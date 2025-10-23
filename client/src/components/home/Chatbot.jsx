@@ -11,7 +11,7 @@ import {
 	AlertCircle,
 } from "lucide-react";
 
-export default function Chatbot() {
+export default function Chatbot({ wellnessData = [] }) {
 	const [messages, setMessages] = useState([]);
 	const [inputMessage, setInputMessage] = useState("");
 	const [isListening, setIsListening] = useState(false);
@@ -28,27 +28,74 @@ export default function Chatbot() {
 	const API_URL = "http://localhost:5000/api/chat";
 	const VOICE_API_URL = "http://localhost:5000/api/analyze-voice";
 
-	const testData = {
-		mental_health: {
-			mood_yesterday: 7,
-			mood_today: 4,
-			mood: 4,
-			stress: 8,
-			sleep_hours: 5,
-			energy: 3,
-		},
-		phone_wellbeing: {
-			screen_time_minutes: 180,
-			screen_time_last_night: 120,
-			unlocks: 92,
-			notifications: 2607,
-			apps: {
-				Instagram: 60,
-				WhatsApp: 30,
-				YouTube: 30,
+	// Convert wellness data to the format expected by the backend
+	const getWellnessDataForAPI = () => {
+		if (!wellnessData || wellnessData.length === 0) {
+			return {
+				mental_health: {
+					mood_yesterday: 5,
+					mood_today: 5,
+					mood: 5,
+					stress: 5,
+					sleep_hours: 7,
+					energy: 5,
+				},
+				phone_wellbeing: {
+					screen_time_minutes: 180,
+					screen_time_last_night: 120,
+					unlocks: 92,
+					notifications: 2607,
+					apps: {
+						Instagram: 60,
+						WhatsApp: 30,
+						YouTube: 30,
+					},
+				},
+			};
+		}
+
+		// Get the most recent data
+		const recentData = wellnessData[wellnessData.length - 1];
+		const avgMood =
+			wellnessData.reduce((sum, day) => sum + (day.mood || 5), 0) /
+			wellnessData.length;
+		const avgStress =
+			wellnessData.reduce((sum, day) => sum + (day.stress || 5), 0) /
+			wellnessData.length;
+		const avgSleep =
+			wellnessData.reduce((sum, day) => sum + (day.sleep || 7), 0) /
+			wellnessData.length;
+		const avgProductivity =
+			wellnessData.reduce((sum, day) => sum + (day.productivity || 5), 0) /
+			wellnessData.length;
+
+		return {
+			mental_health: {
+				mood_yesterday:
+					wellnessData.length > 1
+						? wellnessData[wellnessData.length - 2].mood || 5
+						: 5,
+				mood_today: recentData.mood || 5,
+				mood: Math.round(avgMood),
+				stress: Math.round(avgStress),
+				sleep_hours: Math.round(avgSleep),
+				energy: Math.round(avgProductivity),
 			},
-		},
+			phone_wellbeing: {
+				screen_time_minutes: 180,
+				screen_time_last_night: 120,
+				unlocks: 92,
+				notifications: 2607,
+				apps: {
+					Instagram: 60,
+					WhatsApp: 30,
+					YouTube: 30,
+				},
+			},
+		};
 	};
+
+	const testData = getWellnessDataForAPI();
 
 	// Initialize text-to-speech
 	useEffect(() => {
@@ -333,47 +380,43 @@ export default function Chatbot() {
 	};
 
 	return (
-		<div className='min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 flex items-center justify-center p-4'>
-			<div
-				className='w-full max-w-4xl bg-white rounded-2xl shadow-2xl overflow-hidden flex flex-col'
-				style={{ height: "85vh" }}>
+		<div className='h-full flex flex-col bg-white'>
+			<div className='h-full flex flex-col overflow-hidden'>
 				{/* Header */}
-				<div className='bg-[#06b6d4] px-6 py-4 flex items-center justify-between'>
-					<div className='flex items-center gap-3'>
-						<div className='bg-white/20 p-2 rounded-full'>
-							<Brain className='w-6 h-6 text-white' />
+				<div className='bg-blue-600 px-4 py-3 flex items-center justify-between'>
+					<div className='flex items-center gap-2'>
+						<div className='bg-white/20 p-1.5 rounded-full'>
+							<Brain className='w-4 h-4 text-white' />
 						</div>
 						<div>
-							<h1 className='text-white text-xl font-semibold'>
-								NeuroWell Companion
-							</h1>
-							<div className='flex items-center gap-2'>
+							<h2 className='text-white text-lg font-semibold'>AI Companion</h2>
+							<div className='flex items-center gap-1'>
 								<div
-									className={`w-2 h-2 rounded-full ${
+									className={`w-1.5 h-1.5 rounded-full ${
 										isConnected ? "bg-green-300" : "bg-yellow-300"
 									}`}></div>
 								<p className='text-white/80 text-xs'>
-									{isConnected ? "AI Connected" : "Offline Mode"}
+									{isConnected ? "Connected" : "Offline"}
 								</p>
 							</div>
 						</div>
 					</div>
 
-					<div className='hidden md:flex gap-4'>
-						<div className='bg-white/10 backdrop-blur-sm rounded-lg px-3 py-2 flex items-center gap-2'>
-							<Activity className='w-4 h-4 text-white/80' />
+					<div className='flex gap-2'>
+						<div className='bg-white/10 rounded-lg px-2 py-1 flex items-center gap-1'>
+							<Activity className='w-3 h-3 text-white/80' />
 							<div className='text-left'>
 								<p className='text-white/60 text-xs'>Mood</p>
-								<p className='text-white font-semibold text-sm'>
+								<p className='text-white font-semibold text-xs'>
 									{testData.mental_health.mood}/10
 								</p>
 							</div>
 						</div>
-						<div className='bg-white/10 backdrop-blur-sm rounded-lg px-3 py-2 flex items-center gap-2'>
-							<Moon className='w-4 h-4 text-white/80' />
+						<div className='bg-white/10 rounded-lg px-2 py-1 flex items-center gap-1'>
+							<Moon className='w-3 h-3 text-white/80' />
 							<div className='text-left'>
 								<p className='text-white/60 text-xs'>Sleep</p>
-								<p className='text-white font-semibold text-sm'>
+								<p className='text-white font-semibold text-xs'>
 									{testData.mental_health.sleep_hours}h
 								</p>
 							</div>
@@ -408,7 +451,7 @@ export default function Chatbot() {
 				)}
 
 				{/* Messages */}
-				<div className='flex-1 overflow-y-auto p-6 space-y-4 bg-slate-50/50'>
+				<div className='flex-1 overflow-y-auto p-4 space-y-3 bg-gray-50/50'>
 					{messages.map((message, index) => (
 						<div
 							key={index}
@@ -462,20 +505,20 @@ export default function Chatbot() {
 				</div>
 
 				{/* Input Bar */}
-				<div className='bg-white border-t border-gray-200 p-4'>
-					<div className='flex gap-3 items-center'>
+				<div className='bg-white border-t border-gray-200 p-3'>
+					<div className='flex gap-2 items-center'>
 						<button
 							onClick={toggleVoice}
 							disabled={isLoading}
-							className={`p-3 rounded-xl transition-all ${
+							className={`p-2 rounded-lg transition-all ${
 								isListening
 									? "bg-red-500 text-white shadow-lg animate-pulse"
 									: "bg-gray-100 text-gray-600 hover:bg-gray-200"
 							} disabled:opacity-50`}>
 							{isListening ? (
-								<MicOff className='w-5 h-5' />
+								<MicOff className='w-4 h-4' />
 							) : (
-								<Mic className='w-5 h-5' />
+								<Mic className='w-4 h-4' />
 							)}
 						</button>
 
@@ -484,18 +527,16 @@ export default function Chatbot() {
 							value={inputMessage}
 							onChange={(e) => setInputMessage(e.target.value)}
 							onKeyPress={handleKeyPress}
-							placeholder={
-								isListening ? "Listening..." : "Type or speak your message..."
-							}
+							placeholder={isListening ? "Listening..." : "Type or speak..."}
 							disabled={isLoading || isListening}
-							className='flex-1 px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent disabled:opacity-50 transition-all'
+							className='flex-1 px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50 transition-all text-sm'
 						/>
 
 						<button
 							onClick={handleSend}
 							disabled={!inputMessage.trim() || isLoading}
-							className='bg-[#06b6d4] text-white p-3 rounded-xl hover:bg-[#0891b2] transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg'>
-							<Send className='w-5 h-5' />
+							className='bg-blue-600 text-white p-2 rounded-lg hover:bg-blue-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed'>
+							<Send className='w-4 h-4' />
 						</button>
 					</div>
 

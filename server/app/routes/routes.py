@@ -2,9 +2,9 @@
 from flask import Blueprint, request, jsonify
 from app.services.gemini_service import generate_gemini_response
 from app.services.voice_analysis_service import voice_analyzer
-from app.services.firebase_service import get_user_data
+from app.services.wellness_analysis_service import analyze_weekly_wellness
 
-routes = Blueprint('routes', _name_)
+routes = Blueprint('routes', __name__)
 
 
 @routes.route('/api/analyze-voice', methods=['POST'])
@@ -84,8 +84,16 @@ def chat():
             print(f"Using transcribed speech as message: '{user_message}'")
         
         print(f"Chat request: mode={mode}, message='{user_message[:50] if user_message else 'N/A'}'")
+        print(f"Conversation history length: {len(conversation_history)}")
         if voice_analysis:
             print(f"Voice emotions: stressed={voice_analysis.get('stressed', 'N/A')}, anxious={voice_analysis.get('anxious', 'N/A')}")
+        
+        # Debug conversation flow
+        if conversation_history:
+            print("Recent conversation:")
+            for i, msg in enumerate(conversation_history[-3:]):
+                role = "Bot" if msg['role'] == 'assistant' else "User"
+                print(f"  {i+1}. {role}: {msg['content'][:50]}...")
         
         # Validate message
         if mode == 'chat' and not user_message:
@@ -113,6 +121,37 @@ def chat():
         return jsonify({'error': str(e)}), 500
 
 
+@routes.route('/api/wellness-analysis', methods=['POST'])
+def wellness_analysis():
+    """
+    Analyze weekly wellness data and provide overall score
+    """
+    try:
+        data = request.get_json()
+        wellness_data = data.get('wellness_data', [])
+        user_id = data.get('user_id')
+        
+        if not wellness_data:
+            return jsonify({'error': 'No wellness data provided'}), 400
+        
+        # Calculate overall wellness score
+        analysis_result = analyze_weekly_wellness(wellness_data)
+        
+        return jsonify({
+            'overall_score': analysis_result['overall_score'],
+            'score_breakdown': analysis_result['score_breakdown'],
+            'trends': analysis_result['trends'],
+            'recommendations': analysis_result['recommendations'],
+            'status': 'success'
+        }), 200
+        
+    except Exception as e:
+        print(f"Wellness analysis error: {e}")
+        import traceback
+        traceback.print_exc()
+        return jsonify({'error': str(e)}), 500
+
+
 @routes.route('/api/health', methods=['GET'])
 def health_check():
     """
@@ -127,6 +166,7 @@ def health_check():
             'text_chat', 
             'voice_emotion_analysis', 
             'speech_to_text',  # NEW!
-            'proactive_support'
+            'proactive_support',
+            'wellness_analysis'  # NEW!
         ]
     }), 200

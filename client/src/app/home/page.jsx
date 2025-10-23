@@ -5,6 +5,8 @@ import DailyCheckIn from "@/components/home/daily_checkin";
 import { getUser } from "@/app/lib/getUser";
 import WellnessGraph from "@/components/home/Graphs";
 import { getDailyData } from "@/app/lib/dailydata";
+import Chatbot from "@/components/home/Chatbot";
+import WellnessScore from "@/components/home/WellnessScore";
 
 export default async function HomePage() {
 	const user = await getUser();
@@ -40,13 +42,31 @@ export default async function HomePage() {
 				</p>
 			</div>
 
-			{/* Main Content Grid */}
-			<div className='grid grid-cols-1 xl:grid-cols-2 gap-8'>
-				<div>
-					<DailyCheckIn UserData={UserData} />
+			{/* Main Dashboard Layout */}
+			<div className='grid grid-cols-1 xl:grid-cols-3 gap-8'>
+				{/* Left Column - Daily Check-in, Wellness Score, and Graph */}
+				<div className='xl:col-span-2 space-y-8'>
+					{/* Daily Check-in and Wellness Score Row */}
+					<div className='grid grid-cols-1 lg:grid-cols-2 gap-6'>
+						<div>
+							<DailyCheckIn UserData={UserData} />
+						</div>
+						<div>
+							<WellnessScore wellnessData={wellnessData} />
+						</div>
+					</div>
+
+					{/* Wellness Graph */}
+					<div>
+						<WellnessGraph wellnessData={wellnessData} />
+					</div>
 				</div>
-				<div>
-					<WellnessGraph wellnessData={wellnessData} />
+
+				{/* Right Column - Chatbot */}
+				<div className='xl:col-span-1'>
+					<div className='bg-white rounded-2xl shadow-professional-lg border border-gray-200 overflow-hidden h-[600px]'>
+						<Chatbot wellnessData={wellnessData} />
+					</div>
 				</div>
 			</div>
 		</div>

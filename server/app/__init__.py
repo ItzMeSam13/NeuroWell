@@ -3,7 +3,7 @@ from flask_cors import CORS
 from app.config import Config
 
 def create_app():
-    app = Flask(_name_)
+    app = Flask(__name__)  # ✅ fixed here
     app.config.from_object(Config)
     
     # Enable CORS
