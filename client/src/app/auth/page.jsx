@@ -32,7 +32,7 @@ export default function AuthPage() {
 			setIsLoading(true);
 			const result = await signup(email, password);
 			if (result.success) {
-				router.push("/home");
+				router.push("/auth/onboard");
 			}
 		} catch (err) {
 			if (err instanceof Error) setError(err.message);
