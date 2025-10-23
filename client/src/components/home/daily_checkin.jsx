@@ -47,6 +47,11 @@ export default function DailyCheckIn({ UserData }) {
 				setStreak((prev) => prev + 1); // update streak immediately
 				setCanCheckIn(false);
 				setShowPopup(false);
+
+				// Refresh the page to update the graph and other data
+				setTimeout(() => {
+					window.location.reload();
+				}, 1000);
 			} else {
 				setError(res.error || "Something went wrong");
 			}

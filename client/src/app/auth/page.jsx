@@ -32,9 +32,12 @@ export default function AuthPage() {
 			setIsLoading(true);
 			const result = await signup(email, password);
 			if (result.success) {
-				// Keep loading state until navigation completes
+				// Navigate and reset loading after a short delay
 				router.push("/auth/onboard");
-				// Don't set isLoading to false here - let it stay true during navigation
+				// Reset loading state after navigation starts
+				setTimeout(() => setIsLoading(false), 1000);
+			} else {
+				setIsLoading(false);
 			}
 		} catch (err) {
 			setIsLoading(false); // Only stop loading on error
@@ -63,9 +66,12 @@ export default function AuthPage() {
 			setIsLoading(true);
 			const result = await signin(email, password);
 			if (result.success) {
-				// Keep loading state until navigation completes
+				// Navigate and reset loading after a short delay
 				router.push("/home");
-				// Don't set isLoading to false here - let it stay true during navigation
+				// Reset loading state after navigation starts
+				setTimeout(() => setIsLoading(false), 1000);
+			} else {
+				setIsLoading(false);
 			}
 		} catch (err) {
 			setIsLoading(false); // Only stop loading on error
