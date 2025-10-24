@@ -2,7 +2,10 @@
 
 import { useState, useEffect } from "react";
 import { Calendar, Flame } from "lucide-react";
-import { saveDailyCheckIn } from "@/app/actions/daily_checkin";
+import {
+	saveDailyCheckIn,
+	getUserStreakStatus,
+} from "@/app/actions/daily_checkin";
 
 export default function DailyCheckIn({ UserData }) {
 	const [formData, setFormData] = useState({
@@ -20,7 +23,29 @@ export default function DailyCheckIn({ UserData }) {
 	const [canCheckIn, setCanCheckIn] = useState(true);
 
 	useEffect(() => {
-		if (UserData?.streaks) setStreak(UserData.streaks);
+		// Check and update streak status
+		const checkStreakStatus = async () => {
+			try {
+				const result = await getUserStreakStatus();
+				if (result.success) {
+					setStreak(result.currentStreak);
+
+					// Show notification if streak was reset
+					if (result.streakReset) {
+						setError(
+							`Your streak was reset because you missed ${result.daysSinceLastCheckIn} days. Start a new streak today!`
+						);
+						setTimeout(() => setError(null), 5000);
+					}
+				}
+			} catch (err) {
+				console.error("Error checking streak status:", err);
+				// Fallback to UserData if API fails
+				if (UserData?.streaks) setStreak(UserData.streaks);
+			}
+		};
+
+		checkStreakStatus();
 
 		// 24-hour restriction check
 		if (UserData?.lastCheckIn) {

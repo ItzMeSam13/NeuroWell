@@ -2,7 +2,7 @@
 
 import { usePathname, useRouter } from "next/navigation";
 import { signout } from "@/app/lib/auth";
-import { Home, User, LogOut, Activity } from "lucide-react";
+import { Home, User, LogOut, Activity, Users } from "lucide-react";
 
 export default function SideBar() {
 	const router = useRouter();
@@ -11,6 +11,7 @@ export default function SideBar() {
 	const topItems = [
 		{ name: "Dashboard", path: "/home", icon: Home },
 		{ name: "Activities", path: "/home/activities", icon: Activity },
+		{ name: "Counsellors", path: "/home/counsellors", icon: Users },
 	];
 	const bottomItems = [
 		{ name: "Profile", path: "/home/profile", icon: User },
