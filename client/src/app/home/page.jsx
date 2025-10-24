@@ -44,16 +44,11 @@ export default async function HomePage() {
 
 			{/* Main Dashboard Layout */}
 			<div className='grid grid-cols-1 xl:grid-cols-3 gap-8'>
-				{/* Left Column - Daily Check-in, Wellness Score, and Graph */}
+				{/* Left Column - Daily Check-in and Graph */}
 				<div className='xl:col-span-2 space-y-8'>
-					{/* Daily Check-in and Wellness Score Row */}
-					<div className='grid grid-cols-1 lg:grid-cols-2 gap-6'>
-						<div>
-							<DailyCheckIn UserData={UserData} />
-						</div>
-						<div>
-							<WellnessScore wellnessData={wellnessData} />
-						</div>
+					{/* Daily Check-in */}
+					<div>
+						<DailyCheckIn UserData={UserData} />
 					</div>
 
 					{/* Wellness Graph */}
@@ -62,10 +57,16 @@ export default async function HomePage() {
 					</div>
 				</div>
 
-				{/* Right Column - Chatbot */}
-				<div className='xl:col-span-1'>
-					<div className='bg-white rounded-2xl shadow-professional-lg border border-gray-200 overflow-hidden h-[600px]'>
+				{/* Right Column - Chatbot and Wellness Score */}
+				<div className='xl:col-span-1 space-y-6'>
+					{/* AI Chatbot */}
+					<div className='bg-white rounded-2xl shadow-professional-lg border border-gray-200 overflow-hidden h-[500px]'>
 						<Chatbot wellnessData={wellnessData} />
+					</div>
+
+					{/* Wellness Score */}
+					<div>
+						<WellnessScore wellnessData={wellnessData} />
 					</div>
 				</div>
 			</div>

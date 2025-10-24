@@ -2,13 +2,16 @@
 
 import { usePathname, useRouter } from "next/navigation";
 import { signout } from "@/app/lib/auth";
-import { Home, User, LogOut } from "lucide-react";
+import { Home, User, LogOut, Activity } from "lucide-react";
 
 export default function SideBar() {
 	const router = useRouter();
 	const pathname = usePathname();
 
-	const topItem = { name: "Dashboard", path: "/home", icon: Home };
+	const topItems = [
+		{ name: "Dashboard", path: "/home", icon: Home },
+		{ name: "Activities", path: "/home/activities", icon: Activity },
+	];
 	const bottomItems = [
 		{ name: "Profile", path: "/home/profile", icon: User },
 		{ name: "Logout", action: "logout", icon: LogOut },
@@ -23,7 +26,7 @@ export default function SideBar() {
 		}
 	};
 
-	const isActive = pathname === topItem.path;
+	const isActive = (path) => pathname === path;
 
 	return (
 		<div className='h-full flex flex-col justify-between p-6'>
@@ -38,16 +41,19 @@ export default function SideBar() {
 
 				{/* Navigation items */}
 				<nav className='space-y-1'>
-					<div
-						onClick={() => handleClick(topItem)}
-						className={`cursor-pointer flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all ${
-							isActive
-								? "bg-blue-50 text-blue-700 border border-blue-200"
-								: "text-gray-700 hover:bg-gray-50 hover:text-gray-900"
-						}`}>
-						<topItem.icon className='w-4 h-4' />
-						{topItem.name}
-					</div>
+					{topItems.map((item) => (
+						<div
+							key={item.name}
+							onClick={() => handleClick(item)}
+							className={`cursor-pointer flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all ${
+								isActive(item.path)
+									? "bg-blue-50 text-blue-700 border border-blue-200"
+									: "text-gray-700 hover:bg-gray-50 hover:text-gray-900"
+							}`}>
+							<item.icon className='w-4 h-4' />
+							{item.name}
+						</div>
+					))}
 				</nav>
 			</div>
 

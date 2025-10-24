@@ -3,6 +3,7 @@ from flask import Blueprint, request, jsonify
 from app.services.gemini_service import generate_gemini_response
 from app.services.voice_analysis_service import voice_analyzer
 from app.services.wellness_analysis_service import analyze_weekly_wellness
+from app.services.activities_service import generate_personalized_activities
 
 routes = Blueprint('routes', __name__)
 
@@ -152,6 +153,35 @@ def wellness_analysis():
         return jsonify({'error': str(e)}), 500
 
 
+@routes.route('/api/activities', methods=['POST'])
+def get_personalized_activities():
+    """
+    Generate personalized mental health activities based on user data
+    """
+    try:
+        data = request.get_json()
+        user_profile = data.get('user_profile', {})
+        wellness_data = data.get('wellness_data', {})
+        
+        print(f"Activities request: user_id={user_profile.get('user_id', 'unknown')}")
+        print(f"Wellness data: mood={wellness_data.get('avg_mood', 'N/A')}, stress={wellness_data.get('avg_stress', 'N/A')}")
+        
+        # Generate personalized activities using AI
+        activities = generate_personalized_activities(user_profile, wellness_data)
+        
+        return jsonify({
+            'activities': activities,
+            'status': 'success',
+            'total_activities': len(activities)
+        }), 200
+        
+    except Exception as e:
+        print(f"Activities API error: {e}")
+        import traceback
+        traceback.print_exc()
+        return jsonify({'error': str(e)}), 500
+
+
 @routes.route('/api/health', methods=['GET'])
 def health_check():
     """
@@ -167,6 +197,7 @@ def health_check():
             'voice_emotion_analysis', 
             'speech_to_text',  # NEW!
             'proactive_support',
-            'wellness_analysis'  # NEW!
+            'wellness_analysis',  # NEW!
+            'personalized_activities'  # NEW!
         ]
     }), 200
